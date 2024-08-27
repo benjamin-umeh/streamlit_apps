@@ -78,7 +78,7 @@ if df is not None:
      st.download_button(
           label="Download Invalid Report by Enumerators CSV",
           data=full_report_csv,
-          file_name='full_report.csv',
+          file_name='invalid_surveys_report.csv',
           mime='text/csv',
       )
 
