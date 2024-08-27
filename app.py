@@ -51,7 +51,14 @@ if df is not None:
 
      grouped_df['Remark'] = np.where(grouped_df['survey_time']<=(80*0.25), 'Interview Time Too Short - Not Realistic', '')
      grouped_df['Remark'] = np.where(((grouped_df['Remark']=='') & (grouped_df['time_since_prev_start'] < grouped_df['survey_time'])), 'Started Multiple interviews almost at the same time', grouped_df['Remark'])
-     full_reort = grouped_df.copy()
+     full_report = grouped_df.copy()
+     full_report = full_report.reset_index()
+     full_report = full_report.set_index('survey/inf_id/enum_cod')
+     full_report = full_report.join(enum_df)     
+     full_report = full_report[full_report['survey_validity'] == 'Invalid']
+     full_report = full_report[['enumerator_name', 'enumerator_code', 'survey_time', 'time_since_prev_start',  'survey_validity', 'Remark' ]]
+     full_report = full_report.sort_values('enumerator_name')
+     
 
      perf_by_lga = grouped_df.reset_index()#(names=['survey/inf_id/enum_cod', 'survey/start_survey/date_surv', '_uuid'])
      gr_perf_by_lga = perf_by_lga.groupby(['survey/inf_id/a_lga', 'survey_validity'])['survey_validity'].count()
@@ -69,7 +76,7 @@ if df is not None:
 
      full_report_csv = full_reort.to_csv(index=True).encode('utf-8')
      st.download_button(
-          label="Download Full Report CSV",
+          label="Download Invalid Report by Enumerators CSV",
           data=full_report_csv,
           file_name='full_report.csv',
           mime='text/csv',
