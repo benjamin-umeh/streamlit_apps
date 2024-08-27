@@ -74,7 +74,7 @@ if df is not None:
      full_df = full_df.dropna()
      full_df['percentage_achieved'] = (full_df['valid_number_of_hhs_surveyed']/full_df['hh_samples'])*100
 
-     full_report_csv = full_reort.to_csv(index=True).encode('utf-8')
+     full_report_csv = full_report.to_csv(index=True).encode('utf-8')
      st.download_button(
           label="Download Invalid Report by Enumerators CSV",
           data=full_report_csv,
