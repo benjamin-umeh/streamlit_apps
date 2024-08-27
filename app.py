@@ -67,7 +67,7 @@ if df is not None:
      full_df = full_df.dropna()
      full_df['percentage_achieved'] = (full_df['valid_number_of_hhs_surveyed']/full_df['hh_samples'])*100
 
-     full_report_csv = full_reort.to_csv(index=False).encode('utf-8')
+     full_report_csv = full_reort.to_csv(index=True).encode('utf-8')
      st.download_button(
           label="Download Full Report CSV",
           data=full_report_csv,
@@ -76,7 +76,7 @@ if df is not None:
       )
 
 
-     enum_perf_csv = full_enum_df.to_csv(index=False).encode('utf-8')
+     enum_perf_csv = full_enum_df.to_csv(index=True).encode('utf-8')
      st.download_button(
           label="Download Summary Performance by Enumerators CSV",
           data=enum_perf_csv,
@@ -84,7 +84,7 @@ if df is not None:
           mime='text/csv',
       )
 
-     lga_perf_csv = full_df.to_csv(index=False).encode('utf-8')
+     lga_perf_csv = full_df.to_csv(index=True).encode('utf-8')
      st.download_button(
           label="Download Summary Performance by LGA CSV",
           data=lga_perf_csv,
