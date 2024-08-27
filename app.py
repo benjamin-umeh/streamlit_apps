@@ -81,7 +81,7 @@ if df is not None:
           label="Download Summary Performance by Enumerators CSV",
           data=enum_perf_csv,
           file_name='summary_enum_perf.csv',
-          mime='text/csv', 
+          mime='text/csv',
       )
 
      lga_perf_csv = full_df.to_csv(index=False).encode('utf-8')
