@@ -49,14 +49,16 @@ if df is not None:
      full_enum_df = full_enum_df.fillna(0)
      full_enum_df['valid_number_of_hhs_surveyed'] = full_enum_df['valid_number_of_hhs_surveyed'].astype('int')
 
-     grouped_df['Remark'] = np.where(grouped_df['survey_time']<=(80*0.25), 'Interview Time Too Short - Not Realistic', '')
-     grouped_df['Remark'] = np.where(((grouped_df['Remark']=='') & (grouped_df['time_since_prev_start'] < grouped_df['survey_time'])), 'Started Multiple interviews almost at the same time', grouped_df['Remark'])
+     grouped_df['Remark'] = np.where(grouped_df['currrent_survey_time (minutes)']<=(80*0.25), 'Interview Time Too Short - Not Realistic', '')
+     grouped_df['current_survey_started_before_end_of_previous_survey'] = grouped_df['survey/start_survey/interview_start_time'] < grouped_df['prev_survey_end_time']
+     grouped_df['Remark'] = np.where(((grouped_df['Remark']=='') & (grouped_df['current_survey_started_before_end_of_previous_survey'])), 'Started Multiple interviews almost at the same time', grouped_df['Remark'])
      full_report = grouped_df.copy()
      full_report = full_report.reset_index()
      full_report = full_report.set_index('survey/inf_id/enum_cod')
-     full_report = full_report.join(enum_df)     
+     full_report = full_report.join(enum_df)
+     # full_reort = pd.concat([full_reort, enum_df], axis=1)
      full_report = full_report[full_report['survey_validity'] == 'Invalid']
-     full_report = full_report[['enumerator_name', 'enumerator_code', 'survey_time', 'time_since_prev_start',  'survey_validity', 'Remark' ]]
+     full_report = full_report[['enumerator_name', 'enumerator_code', 'currrent_survey_time (minutes)', 'survey_validity', 'Remark' ]]
      full_report = full_report.sort_values('enumerator_name')
      
 
