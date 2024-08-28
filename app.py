@@ -24,7 +24,7 @@ yesterday = yesterday.date()
 
 if df is not None:
      df = pd.read_csv(df)
-     df = df[pd.to_datetime(df['survey/start_survey/interview_start_time']).dt.date <= yesterday)]
+     df = df[pd.to_datetime(df['survey/start_survey/interview_start_time']).dt.date <= yesterday]
      
 
      # lga_df = pd.read_csv('lga_target.csv', engine='python')
