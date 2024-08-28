@@ -11,13 +11,13 @@ enum_df = pd.read_csv('enum_df.csv')
 enum_df = enum_df.set_index('label')
 df = st.file_uploader("Upload the survey data CSV", type=['csv'])
 
-start_date = datetime(2024, 8, 26, 00, 00, 00, 000000)
-end_data = datetime.now()
+# start_date = datetime(2024, 8, 26, 00, 00, 00, 000000)
+# end_data = datetime.now()
 
-d = st.date_input(
-    "Select the report date range",
-    (start_date, end_data)
-    )
+# d = st.date_input(
+#     "Select the report date range",
+#     (start_date, end_data)
+#     )
 
 if df is not None:
      df = pd.read_csv(df)
@@ -59,27 +59,8 @@ if df is not None:
      grouped_df['Remark'] = np.where(grouped_df['currrent_survey_time (minutes)']<=(80*0.25), 'Interview Time Too Short - Not Realistic', '')
      grouped_df['current_survey_started_before_end_of_previous_survey'] = grouped_df['survey/start_survey/interview_start_time'] < grouped_df['prev_survey_end_time']
      grouped_df['Remark'] = np.where(((grouped_df['Remark']=='') & (grouped_df['current_survey_started_before_end_of_previous_survey'])), 'Started Multiple interviews almost at the same time', grouped_df['Remark'])
-
-     df2 = df.copy()
-     df2 = df2[(pd.to_datetime(df2['survey/start_survey/interview_start_time']).dt.date >= d[0]) & (pd.to_datetime(df2['survey/start_survey/interview_start_time']).dt.date <= d[1])]
-
-     grouped_df_2 = df2.groupby(['survey/inf_id/a_lga','enum_name','survey/inf_id/enum_cod', 'survey/start_survey/date_surv','_uuid'])[['survey/start_survey/interview_start_time','survey/interview_end_time']].mean()
-     grouped_df_2['survey/interview_end_time'] = grouped_df_2['survey/interview_end_time'].values.astype(np.int64) // 10 ** 9
-     grouped_df_2 = grouped_df_2.sort_values(by=['survey/inf_id/enum_cod', 'survey/start_survey/interview_start_time'])
-     grouped_df_2['survey/start_survey/interview_start_time'] = grouped_df_2['survey/start_survey/interview_start_time'].values.astype(np.int64) // 10 ** 9
-
-     grouped_df_2['currrent_survey_time (minutes)'] = (grouped_df_2['survey/interview_end_time'] - grouped_df_2['survey/start_survey/interview_start_time'])/60
-     grouped_df_2['prev_survey_time (minutes)'] = grouped_df_2.groupby('survey/inf_id/enum_cod')['currrent_survey_time (minutes)'].shift(1)
-     
-     grouped_df_2['prev_survey_end_time'] = grouped_df_2.groupby('survey/inf_id/enum_cod')['survey/interview_end_time'].shift(1)
-     grouped_df_2['survey_validity'] = np.where((grouped_df_2['currrent_survey_time (minutes)']<=(80*0.25)) | (grouped_df_2['survey/start_survey/interview_start_time'] < grouped_df_2['prev_survey_end_time']), 'Invalid', 'Valid')
-
-     grouped_df_2['Remark'] = np.where(grouped_df_2['currrent_survey_time (minutes)']<=(80*0.25), 'Interview Time Too Short - Not Realistic', '')
-     grouped_df_2['current_survey_started_before_end_of_previous_survey'] = grouped_df_2['survey/start_survey/interview_start_time'] < grouped_df_2['prev_survey_end_time']
-     grouped_df_2['Remark'] = np.where(((grouped_df_2['Remark']=='') & (grouped_df_2['current_survey_started_before_end_of_previous_survey'])), 'Started Multiple interviews almost at the same time', grouped_df_2['Remark'])
-     
     
-     full_report = grouped_df_2.copy()
+     full_report = grouped_df.copy()
     
      full_report = full_report.reset_index()
      full_report = full_report.set_index('survey/inf_id/enum_cod')
