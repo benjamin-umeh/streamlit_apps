@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from datetime import datetime
+from datetime import datetime, timedelta
 import streamlit as st
 
 # st.title('Remote Data Collection Quality Monitoring App')
@@ -19,8 +19,13 @@ df = st.file_uploader("Upload the survey data CSV", type=['csv'])
 #     (start_date, end_data)
 #     )
 
+yesterday = datetime.now() - timedelta(1)
+yesterday = yesterday.date()
+
 if df is not None:
      df = pd.read_csv(df)
+     df = df[pd.to_datetime(df['survey/start_survey/interview_start_time']).dt.date <= yesterday)]
+     
 
      # lga_df = pd.read_csv('lga_target.csv', engine='python')
      lga_df = lga_df.set_index('lga_code')
