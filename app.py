@@ -27,22 +27,22 @@ if df is not None:
      grouped_df = grouped_df.sort_values(by=['survey/inf_id/enum_cod', 'survey/start_survey/interview_start_time'])
      grouped_df['survey/start_survey/interview_start_time'] = grouped_df['survey/start_survey/interview_start_time'].values.astype(np.int64) // 10 ** 9
 
-     grouped_df['survey_time'] = (grouped_df['survey/interview_end_time'] - grouped_df['survey/start_survey/interview_start_time'])/60
-
-     grouped_df['prev_start_time'] = grouped_df.groupby('survey/inf_id/enum_cod')['survey/start_survey/interview_start_time'].shift(1)
-
-     grouped_df['time_since_prev_start'] = (grouped_df['survey/start_survey/interview_start_time'] - grouped_df['prev_start_time'])/60
-
-     grouped_df['survey_validity'] = np.where((grouped_df['survey_time']<=(80*0.25)) | (grouped_df['time_since_prev_start'] < grouped_df['survey_time']), 'Invalid', 'Valid')
-
+     grouped_df['currrent_survey_time (minutes)'] = (grouped_df['survey/interview_end_time'] - grouped_df['survey/start_survey/interview_start_time'])/60
+     grouped_df['prev_survey_time (minutes)'] = grouped_df.groupby('survey/inf_id/enum_cod')['currrent_survey_time (minutes)'].shift(1)
+     
+     
+     grouped_df['prev_survey_end_time'] = grouped_df.groupby('survey/inf_id/enum_cod')['survey/interview_end_time'].shift(1)
+     grouped_df['survey_validity'] = np.where((grouped_df['currrent_survey_time (minutes)']<=(80*0.25)) | (grouped_df['survey/start_survey/interview_start_time'] < grouped_df['prev_survey_end_time']), 'Invalid', 'Valid')
+     
      enum_perf_df = grouped_df.copy()
+     
      perf_by_enum = enum_perf_df.copy()
-
+     
      gr_perf_by_enum = perf_by_enum.groupby(['survey/inf_id/enum_cod', 'survey_validity'])['survey_validity'].count()
      gr_perf_by_enum.name = "valid_number_of_hhs_surveyed"
      gr_perf_by_enum = gr_perf_by_enum.reset_index()
      gr_perf_by_enum = gr_perf_by_enum.set_index('survey/inf_id/enum_cod')
-
+     
      gr_perf_by_enum = gr_perf_by_enum[gr_perf_by_enum['survey_validity']=='Valid']
      gr_perf_by_enum = gr_perf_by_enum.drop(columns=['survey_validity'])
      full_enum_df = pd.concat([enum_df,gr_perf_by_enum], axis=1)
