@@ -11,8 +11,14 @@ enum_df = pd.read_csv('enum_df.csv')
 enum_df = enum_df.set_index('label')
 df = st.file_uploader("Upload the survey data CSV", type=['csv'])
 
+d = st.date_input(
+    "Select the report date range",
+    (start_date, end_data)
+    )
+
 if df is not None:
      df = pd.read_csv(df)
+     df = df[(pd.to_datetime(df['survey/start_survey/interview_start_time']).dt.date >= d[0]) & (pd.to_datetime(df['survey/start_survey/interview_start_time']).dt.date <= d[1])]
 
      # lga_df = pd.read_csv('lga_target.csv', engine='python')
      lga_df = lga_df.set_index('lga_code')
