@@ -73,10 +73,13 @@ if df is not None:
      
      grouped_df_2['prev_survey_end_time'] = grouped_df_2.groupby('survey/inf_id/enum_cod')['survey/interview_end_time'].shift(1)
      grouped_df_2['survey_validity'] = np.where((grouped_df_2['currrent_survey_time (minutes)']<=(80*0.25)) | (grouped_df_2['survey/start_survey/interview_start_time'] < grouped_df_2['prev_survey_end_time']), 'Invalid', 'Valid')
-     
+
+     grouped_df_2['Remark'] = np.where(grouped_df_2['currrent_survey_time (minutes)']<=(80*0.25), 'Interview Time Too Short - Not Realistic', '')
+     grouped_df_2['current_survey_started_before_end_of_previous_survey'] = grouped_df_2['survey/start_survey/interview_start_time'] < grouped_df_2['prev_survey_end_time']
+     grouped_df_2['Remark'] = np.where(((grouped_df_2['Remark']=='') & (grouped_df_2['current_survey_started_before_end_of_previous_survey'])), 'Started Multiple interviews almost at the same time', grouped_df_2['Remark'])
      
     
-     full_report = grouped_df.copy()
+     full_report = grouped_df_2.copy()
     
      full_report = full_report.reset_index()
      full_report = full_report.set_index('survey/inf_id/enum_cod')
