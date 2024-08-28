@@ -3,7 +3,7 @@ import numpy as np
 from datetime import datetime
 import streamlit as st
 
-st.title('Data Collection Monitoring App')
+st.title('Remote Data Collection Quality Monitoring App')
 
 lga_df = pd.read_csv('lga_target.csv') #st.file_uploader("Upload the lga CSV with columns lga_name, lga_code, hh_samples", type=['csv'])
 enum_df = pd.read_csv('enum_df.csv')
