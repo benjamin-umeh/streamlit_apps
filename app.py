@@ -11,6 +11,9 @@ enum_df = pd.read_csv('enum_df.csv')
 enum_df = enum_df.set_index('label')
 df = st.file_uploader("Upload the survey data CSV", type=['csv'])
 
+start_date = datetime.datetime(2024, 8, 26, 00, 00, 00, 000000)
+end_data = datetime.datetime.now()
+
 d = st.date_input(
     "Select the report date range",
     (start_date, end_data)
