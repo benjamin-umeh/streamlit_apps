@@ -90,6 +90,57 @@ if df is not None:
      full_df = full_df.dropna()
      full_df['percentage_achieved'] = (full_df['valid_number_of_hhs_surveyed']/full_df['hh_samples'])*100
 
+     # Questionable submissions
+     tot_count = df.groupby('survey/inf_id/enum_cod')['survey/start_survey/date_surv'].count()
+
+     protein_ind_count_df = df.groupby(['survey/inf_id/enum_cod','survey/grp_fcs_gl/grp_fcs4_protein/FCSPr'])['survey/grp_fcs_gl/grp_fcs4_protein/FCSPr'].count()
+     protein_ind_count_df.name = "count"
+     protein_ind_count_df = pd.DataFrame(protein_ind_count_df)
+
+     dairy_ind_count_df = df.groupby(['survey/inf_id/enum_cod','survey/grp_fcs_gl/grp_fcs3_milk/FCSDairy'])['survey/grp_fcs_gl/grp_fcs4_protein/FCSPr'].count()
+     dairy_ind_count_df.name = "count"
+     dairy_ind_count_df = pd.DataFrame(dairy_ind_count_df)
+
+     pulses_ind_count_df = df.groupby(['survey/inf_id/enum_cod','survey/grp_fcs_gl/grp_fcs2_leg/FCSPulse'])['survey/grp_fcs_gl/grp_fcs4_protein/FCSPr'].count()
+     pulses_ind_count_df.name = "count"
+     pulses_ind_count_df = pd.DataFrame(pulses_ind_count_df)
+
+     protein_ind_count_df = protein_ind_count_df.reset_index()
+     protein_ind_count_df = protein_ind_count_df.set_index('survey/inf_id/enum_cod')
+
+     dairy_ind_count_df = dairy_ind_count_df.reset_index()
+     dairy_ind_count_df = dairy_ind_count_df.set_index('survey/inf_id/enum_cod')
+
+     pulses_ind_count_df = pulses_ind_count_df.reset_index()
+     pulses_ind_count_df = pulses_ind_count_df.set_index('survey/inf_id/enum_cod')
+
+     protein_ind_count_df['survey/grp_fcs_gl/grp_fcs4_protein/FCSPr'] = protein_ind_count_df['survey/grp_fcs_gl/grp_fcs4_protein/FCSPr'].astype(int)
+     dairy_ind_count_df['survey/grp_fcs_gl/grp_fcs3_milk/FCSDairy'] = dairy_ind_count_df['survey/grp_fcs_gl/grp_fcs3_milk/FCSDairy'].astype(int)
+     pulses_ind_count_df['survey/grp_fcs_gl/grp_fcs2_leg/FCSPulse'] = pulses_ind_count_df['survey/grp_fcs_gl/grp_fcs2_leg/FCSPulse'].astype(int)
+
+     mode_ind_protein = pd.DataFrame(protein_ind_count_df).join(pd.DataFrame(tot_count))
+     mode_ind_protein['percent_occurred'] = mode_ind_protein['count']/mode_ind_protein['survey/start_survey/date_surv']
+     mode_ind_protein["1st Observed Potential Anomaly"] = "About 70% of respondents from this enumerator reported consuming protein for " + mode_ind_protein['survey/grp_fcs_gl/grp_fcs4_protein/FCSPr'].astype(str) + " days in the last 7 days - This is questionable"
+     mode_ind_protein = mode_ind_protein[mode_ind_protein['percent_occurred']>= 0.65]
+     mode_ind_protein = pd.DataFrame(mode_ind_protein["1st Observed Potential Anomaly"])
+
+     mode_ind_dairy = pd.DataFrame(dairy_ind_count_df).join(pd.DataFrame(tot_count))
+     mode_ind_dairy['percent_occurred'] = mode_ind_dairy['count']/mode_ind_dairy['survey/start_survey/date_surv']
+     mode_ind_dairy["2nd Observed Potential Anomaly"] = "About 70% of respondents from this enumerator reported consuming milk or other dairy products for " + mode_ind_dairy['survey/grp_fcs_gl/grp_fcs3_milk/FCSDairy'].astype(str) + " days in the last 7 days - This is questionable"
+     mode_ind_dairy = mode_ind_dairy[mode_ind_dairy['percent_occurred']>= 0.65]
+     mode_ind_dairy = pd.DataFrame(mode_ind_dairy["2nd Observed Potential Anomaly"])
+
+     mode_ind_pulses = pd.DataFrame(pulses_ind_count_df).join(pd.DataFrame(tot_count))
+     mode_ind_pulses['percent_occurred'] = mode_ind_pulses['count']/mode_ind_pulses['survey/start_survey/date_surv']
+     mode_ind_pulses["3rd Observed Potential Anomaly"] = "About 70% of respondents from this enumerator reported consuming pulses for " + mode_ind_pulses['survey/grp_fcs_gl/grp_fcs2_leg/FCSPulse'].astype(str) + " days in the last 7 days - This is questionable"
+     mode_ind_pulses = mode_ind_pulses[mode_ind_pulses['percent_occurred']>= 0.65]
+     mode_ind_pulses = pd.DataFrame(mode_ind_pulses["3rd Observed Potential Anomaly"])
+
+     full_anomaly_df = pd.concat([mode_ind_protein, mode_ind_dairy, mode_ind_pulses], axis=1)
+     full_anomaly_df = full_anomaly_df.dropna(thresh=2)
+     full_anomaly_df = pd.concat([enum_df, full_anomaly_df], axis=1, join="inner")
+     
+
      full_report_csv = full_report.to_csv(index=True).encode('utf-8')
      st.download_button(
           label="Download Invalid Report by Enumerators CSV",
@@ -112,5 +163,14 @@ if df is not None:
           label="Download Summary Performance by LGA CSV",
           data=lga_perf_csv,
           file_name='summary_lga_perf.csv',
+          mime='text/csv',
+      )
+     
+
+     full_anomaly_csv = full_anomaly_df.to_csv(index=True).encode('utf-8')
+     st.download_button(
+          label="Download Enumerators with Questionable Submissions CSV",
+          data=full_anomaly_csv,
+          file_name='questionable_submissions.csv',
           mime='text/csv',
       )
