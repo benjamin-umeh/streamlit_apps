@@ -8,7 +8,6 @@ st.markdown("<h1 style='text-align: center; color: grey;'>Remote Data Collection
 
 lga_df = st.file_uploader("Upload the lga CSV with columns 'lga_name', 'lga_code', 'hh_samples'", type=['csv'])
 enum_df = st.file_uploader("Upload the enumerators CSV with columns 'enumerator_name', 'enumerator_code', 'label'", type=['csv'])
-enum_df = enum_df.set_index('label')
 df = st.file_uploader("Upload the survey data CSV", type=['csv'])
 
 
@@ -25,6 +24,7 @@ yesterday = yesterday.date()
 
 if df is not None and lga_df is not None and enum_df is not None:
      enum_df = pd.read_csv(enum_df)
+     enum_df = enum_df.set_index('label')
      lga_df = pd.read_csv(lga_df)
      df = pd.read_csv(df)
      df = df[pd.to_datetime(df['survey/start_survey/interview_start_time']).dt.date <= yesterday]
