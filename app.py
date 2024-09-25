@@ -25,7 +25,10 @@ yesterday = yesterday.date()
 if df is not None and lga_df is not None and enum_df is not None:
      enum_df = pd.read_csv(enum_df)
      enum_df = enum_df.set_index('label')
+     enum_df = enum_df[['enumerator_name', 'enumerator_code']]
      lga_df = pd.read_csv(lga_df)
+     lga_df = lga_df[["lga_name","lga_code","hh_samples"]]
+
      df = pd.read_csv(df)
      df = df[pd.to_datetime(df['survey/start_survey/interview_start_time']).dt.date <= yesterday]
      
