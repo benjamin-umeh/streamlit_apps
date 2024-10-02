@@ -63,7 +63,7 @@ if df is not None and lga_df is not None and enum_df is not None:
      
      gr_perf_by_enum = gr_perf_by_enum[gr_perf_by_enum['survey_validity']=='Valid']
      gr_perf_by_enum = gr_perf_by_enum.drop(columns=['survey_validity'])
-     full_enum_df = pd.concat([enum_df,gr_perf_by_enum], axis=1)
+     full_enum_df = pd.concat([enum_df,gr_perf_by_enum], axis=1, join='inner')
      full_enum_df = full_enum_df.fillna(0)
      full_enum_df['valid_number_of_hhs_surveyed'] = full_enum_df['valid_number_of_hhs_surveyed'].astype('int')
 
