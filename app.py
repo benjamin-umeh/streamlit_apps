@@ -7,7 +7,7 @@ import streamlit as st
 st.markdown("<h1 style='text-align: center; color: grey;'>Remote Data Collection Quality Monitoring App</h1>", unsafe_allow_html=True)
 
 lga_df = st.file_uploader("Upload the lga CSV with columns 'lga_name', 'lga_code', 'hh_samples'", type=['csv'])
-enum_df = st.file_uploader("Upload the enumerators CSV with columns 'enumerator_name', 'enumerator_code', 'label'", type=['csv'])
+enum_df = st.file_uploader("Upload the enumerators CSV with columns 'enumerator_name', 'enumerator_code', 'label', 'lga'", type=['csv'])
 df = st.file_uploader("Upload the survey data CSV", type=['csv'])
 
 
