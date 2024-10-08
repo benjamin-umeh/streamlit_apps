@@ -23,8 +23,8 @@ yesterday = datetime.now() - timedelta(1)
 yesterday = yesterday.date()
 
 if df is not None and lga_df is not None and enum_df is not None:
-     enum_df = pd.read_csv(enum_df)
-     enum_df = enum_df.set_index('label')
+     enum_df_raw = pd.read_csv(enum_df)
+     enum_df = enum_df_raw.copy().set_index('label')
      enum_df = enum_df[['enumerator_name', 'enumerator_code']]
      lga_df = pd.read_csv(lga_df)
      lga_df = lga_df[["lga_name","lga_code","hh_samples"]]
