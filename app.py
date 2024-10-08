@@ -145,6 +145,43 @@ if df is not None and lga_df is not None and enum_df is not None:
      full_anomaly_df = pd.concat([mode_ind_protein, mode_ind_dairy, mode_ind_pulses], axis=1)
      full_anomaly_df = full_anomaly_df.dropna(thresh=2)
      full_anomaly_df = pd.concat([enum_df, full_anomaly_df], axis=1, join="inner")
+
+     # Final Performance Report
+     tot_survey_lga = df.groupby(['survey/inf_id/a_lga'])['survey/inf_id/a_lga'].count()
+     tot_survey_lga.name = 'Total Number of Households Surveyed'
+     tot_survey_lga = pd.DataFrame(tot_survey_lga)
+
+     final_perf_report = pd.concat([full_df,tot_survey_lga], axis=1, join='inner')
+     final_perf_report = final_perf_report.rename(columns={'hh_samples':'Target Households Samples Size', 'valid_number_of_hhs_surveyed':'Total Valid Survey',\
+                                                       'percentage_achieved':'Percentage of Valid Survey Achievement', 'lga_name':'LGA Name'})
+     final_perf_report['Total Invalid Survey'] = final_perf_report['Total Number of Households Surveyed'] - final_perf_report['Total Valid Survey']
+     final_perf_report["Percentage of Valid Survey Achievement"] = round(final_perf_report["Percentage of Valid Survey Achievement"],2)
+     final_perf_report['LGA Name'] = final_perf_report['LGA Name'].str.upper() 
+
+     unique_lga = enum_df_raw.lga.unique()
+
+     new_udf = pd.DataFrame()
+     enum_name_lists = []
+     for u in unique_lga:
+          udf = enum_df_raw[enum_df_raw['lga']==u]
+          enum_names = list(udf.enumerator_name.values)
+          enum_name_lists.append(enum_names)
+     enum_name_lists 
+
+     new_udf['lga'] = unique_lga
+     new_udf['lga'] = new_udf['lga'].str.upper() 
+     new_udf['Enumerators Names'] = enum_name_lists
+
+     new_udf['Field Enumerators Names'] = new_udf['Enumerators Names'].apply(', '.join)
+     new_udf = new_udf.drop(columns=['Enumerators Names'])
+     new_udf = new_udf.set_index('lga')
+
+     final_perf_report = final_perf_report.set_index("LGA Name")
+     final_perf_report = pd.concat([final_perf_report,new_udf], axis=1, join='inner')
+     final_perf_report = final_perf_report.reset_index()
+     final_perf_report = final_perf_report.rename(columns={'index':"LGA Name"})
+     final_perf_report = final_perf_report[["LGA Name", "Field Enumerators Names","Target Households Samples Size", "Total Number of Households Surveyed", "Total Invalid Survey","Total Valid Survey","Percentage of Valid Survey Achievement"]]
+
      
 
      full_report_csv = full_report.to_csv(index=True).encode('utf-8')
@@ -180,3 +217,12 @@ if df is not None and lga_df is not None and enum_df is not None:
           file_name='questionable_submissions.csv',
           mime='text/csv',
       )
+
+      final_perf_report = final_perf_report.to_csv(index=True).encode('utf-8')
+     st.download_button(
+          label="Download Final LGA/Enumerators Performance Report",
+          data=final_perf_report,
+          file_name='final_perf_report.csv',
+          mime='text/csv',
+      )
+
