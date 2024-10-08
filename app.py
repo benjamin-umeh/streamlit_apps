@@ -165,8 +165,7 @@ if df is not None and lga_df is not None and enum_df is not None:
      for u in unique_lga:
           udf = enum_df_raw[enum_df_raw['lga']==u]
           enum_names = list(udf.enumerator_name.values)
-          enum_name_lists.append(enum_names)
-     enum_name_lists 
+          enum_name_lists.append(enum_names) 
 
      new_udf['lga'] = unique_lga
      new_udf['lga'] = new_udf['lga'].str.upper() 
