@@ -218,7 +218,7 @@ if df is not None and lga_df is not None and enum_df is not None:
           mime='text/csv',
       )
 
-      final_perf_report = final_perf_report.to_csv(index=True).encode('utf-8')
+     final_perf_report = final_perf_report.to_csv(index=True).encode('utf-8')
      st.download_button(
           label="Download Final LGA/Enumerators Performance Report",
           data=final_perf_report,
