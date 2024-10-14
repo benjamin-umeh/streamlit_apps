@@ -75,7 +75,7 @@ if df is not None and lga_df is not None and enum_df is not None:
     
      full_report = full_report.reset_index()
      full_report = full_report.set_index('survey/inf_id/enum_cod')
-     full_report = full_report.join(enum_df)
+     full_report = full_report.join(enum_df, how='inner')
      # full_reort = pd.concat([full_reort, enum_df], axis=1)
      full_report = full_report[full_report['survey_validity'] == 'Invalid']
      full_report = full_report[['enumerator_name', 'enumerator_code', 'currrent_survey_time (minutes)', 'survey_validity', 'Remark', '_uuid' ]]
